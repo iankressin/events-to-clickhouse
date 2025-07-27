@@ -1,0 +1,4 @@
+{
+  "name": "events-to-clickhouse-table",
+  "packageManager": "yarn@4.6.0"
+}
