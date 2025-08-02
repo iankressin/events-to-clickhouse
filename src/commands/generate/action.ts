@@ -5,7 +5,6 @@ import {
     OptionsSchema,
     Event,
     FromAddress,
-    FromFile,
 } from "./schemas";
 import { solidityToClickHouseTypes } from "./config";
 import { Effect } from "effect";
@@ -33,7 +32,6 @@ export const generate = (options: any) => Effect.gen(function* () {
         ? yield* fetchFromEtherscan(parsedOptions)
         : yield* readJsonFile(options.abi, AbiSchema)
         
-
     const abiEvents = extractEvents(abi)
     for (const event of abiEvents) {
         const tableSql = tableTemplate(event);

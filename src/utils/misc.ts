@@ -1,4 +1,4 @@
-import { Effect } from "effect/index"
+import { Effect } from "effect"
 
 export const catchErr = (err: unknown) =>
    err instanceof Error 
