@@ -12,7 +12,9 @@ program
 program
     .command('generate')
     .description('Generate DB tables from EVM events')
-    .option('-e, --etherscan <string>', 'Etherscan API key')
+    .option(`-f, --from <'address', 'abi'>`, 'Tells the CLI to either fetch the ABI from Etherscan using the contract address or from a local ABI file')
+    .option('-a, --abi <string>', 'Path to ABI file')
     .option('-c --contract <string>', 'Contract address')
+    .option('-e, --etherscan <string>', 'Etherscan API key. Must be provided if fetch ABI by contract address')
     .option('-o --output <string>', 'Output directory for the generated file')
     .action((options) => Effect.runPromise(generate(options)))
