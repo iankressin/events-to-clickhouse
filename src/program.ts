@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import { generate } from './commands/generate/action';
+import { Effect } from 'effect/index';
 
 export const program = new Command()
 
@@ -14,4 +15,4 @@ program
     .option('-e, --etherscan <string>', 'Etherscan API key')
     .option('-c --contract <string>', 'Contract address')
     .option('-o --output <string>', 'Output directory for the generated file')
-    .action((options) => generate(options))
+    .action((options) => Effect.runPromise(generate(options)))

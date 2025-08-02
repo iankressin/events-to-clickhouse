@@ -53,6 +53,7 @@ export const AbiItemSchema = z.discriminatedUnion('type', [
 export const AbiSchema = z.array(AbiItemSchema);
 
 export type Event = z.infer<typeof EventSchema>;
+export type GenerateOptions = z.infer<typeof GenerateOptionsSchema>;
 export type AbiItem = z.infer<typeof AbiItemSchema>;
 export type ContractAbi = z.infer<typeof AbiSchema>;
 

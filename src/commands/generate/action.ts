@@ -1,6 +1,17 @@
-import { AbiSchema, ContractAbi, EtherscanResponse, GenerateOptionsSchema, Event } from "./schemas";
+import {
+    AbiSchema,
+    ContractAbi,
+    EtherscanResponse,
+    GenerateOptionsSchema,
+    GenerateOptions,
+    Event,
+} from "./schemas";
 import { solidityToClickHouseTypes } from "./config";
-import fs from 'fs';
+import { writeFileSync } from 'fs';
+import { Effect } from "effect";
+import { parseData } from "../../utils/parse";
+import { get } from '../../utils/fetch'
+import { catchErr } from "../../utils/misc";
 
 const BASE_ETHERSCAN_URL = 'https://api.etherscan.io/v2/api';
 const FILE_NAME = 'events.sql';
@@ -15,84 +26,36 @@ interface ParsedEvent {
     params: ParsedEventParam[];
 }
 
-export async function generate(options: any) {
-    const parsedOptions = GenerateOptionsSchema.safeParse(options);
-
-    if (!parsedOptions.success) {
-        console.warn("Invalid options provided:", parsedOptions.error.format);
-        return
-    }
-
-    const { data } = parsedOptions;
-    if (!data) {
-        console.warn('Missing data from parsed options');
-        return
-    }
-
-    const abi = await fetchContractAbi(
-        data.contract,
-        data.etherscan,
-        data.chain
-    );
-
-    if (!abi) return
-
+export const generate = (options: any) => Effect.gen(function* () {
+    const parsedOptions = yield* parseData(GenerateOptionsSchema, options)
+    const abi = yield* fetchAbi(parsedOptions)
     const abiEvents = extractEvents(abi)
-
     for (const event of abiEvents) {
         const tableSql = tableTemplate(event);
-        writeToFile(tableSql, FILE_NAME);
+        yield* writeToFile(tableSql, FILE_NAME);
     }
-}
+})
 
-export async function fetchContractAbi(
-    contractAddress: string,
-    apiKey: string,
-    chain: number
-): Promise<ContractAbi | undefined> {
+const fetchAbi = (options: GenerateOptions) => Effect.gen(function* () {
     const params = new URLSearchParams({
         module: 'contract',
         action: 'getabi',
-        chainid: chain.toString(),
-        apikey: apiKey,
-        address: contractAddress
+        chainid: options.chain.toString(),
+        apikey: options.etherscan,
+        address: options.contract
     })
+    const response = yield* get(BASE_ETHERSCAN_URL, params, EtherscanResponse)
 
-    const url = `${BASE_ETHERSCAN_URL}?${params.toString()}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-        console.error(`Failed to fetch ABI: ${response.statusText}`);
-        return undefined;
-    }
+    if (response.status !== '1')
+        return Effect.fail(`Error fetching ABI: ${response.message}`);
 
-    const data = await response.json();
-    const parsedResponse = EtherscanResponse.safeParse(data);
-    if (!parsedResponse.success) {
-        console.error("Invalid response from Etherscan:", parsedResponse.error.format);
-        return undefined;
-    }
+    if (!response.result)
+        return Effect.fail("No ABI found in response");
 
-    if (parsedResponse.data.status !== '1') {
-        console.error(`Error fetching ABI: ${data.message}`);
-        return undefined;
-    }
+    return JSON.parse(response.result)
+}).pipe(Effect.flatMap((result) => parseData(AbiSchema, result)))
 
-    if (!parsedResponse.data.result) {
-        console.error("No ABI found in response");
-        return undefined;
-    }
-
-    const abi = JSON.parse(parsedResponse.data.result);
-    const parsedAbi = AbiSchema.safeParse(abi);
-    if (parsedAbi.success) {
-        return parsedAbi.data;
-    }
-
-    console.error("Invalid ABI format:", parsedAbi.error.issues);
-    return undefined
-}
-
-function extractEvents(abi: ContractAbi): ParsedEvent[] {
+const extractEvents = (abi: ContractAbi): ParsedEvent[] => {
     return abi
         .filter((item): item is Event => item.type === 'event')
         .map(event => {
@@ -108,9 +71,8 @@ function extractEvents(abi: ContractAbi): ParsedEvent[] {
         })
 }
 
-
-function tableTemplate(event: ParsedEvent): string {
-    return `CREATE TABLE IF NOT EXISTS ${event.name} (
+const tableTemplate = (event: ParsedEvent) =>
+`CREATE TABLE IF NOT EXISTS ${event.name} (
     block_number UInt32 CODEC (DoubleDelta, ZSTD),
     timestamp DateTime CODEC (DoubleDelta, ZSTD),
     ${event.params.map(arg => `${arg.name} ${solidityToClickHouseTypes[arg.type]}`).join(',\n\t')},
@@ -119,9 +81,9 @@ function tableTemplate(event: ParsedEvent): string {
 ENGINE = CollapsingMergeTree()
 ORDER BY (block_number, timestamp)
 
-`
-} 
+` 
 
-function writeToFile(content: string, filePath: string): void {
-    fs.writeFileSync(filePath, content, { encoding: 'utf8', flag: 'a' });
-}
+const writeToFile = (content: string, filePath: string) => Effect.try({
+    try: () => writeFileSync(filePath, content, { encoding: 'utf8', flag: 'a' }),
+    catch: catchErr
+})
