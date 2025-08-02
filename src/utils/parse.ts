@@ -12,8 +12,8 @@ export function parseData<
 > {
     const parsedOptions = schema.safeParse(data);
 
-    if (!parsedOptions.success) 
-        return Effect.fail(`Invalid options provided: ${parsedOptions.error.format}`)
+    if (!parsedOptions.success)
+        return Effect.fail(`Invalid options provided: ${parsedOptions.error.format()}`)
     
     return Effect.succeed(parsedOptions.data)
 }

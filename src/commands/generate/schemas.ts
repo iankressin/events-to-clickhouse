@@ -1,12 +1,24 @@
 import { z } from 'zod';
 
-export const GenerateOptionsSchema = z.object({
+export const FromAddressSchema = z.object({
+    from: z.literal('address'),
     etherscan: z.string(),
     // TODO: validate contract address format
     contract: z.string(),
     output: z.string().optional(),
     chain: z.number().default(1),
 })
+
+export const FromFileSchema = z.object({
+  from: z.literal('abi'),
+  abi: z.string(),
+  output: z.string().optional(),
+})
+
+export const OptionsSchema = z.discriminatedUnion('from', [
+  FromAddressSchema,
+  FromFileSchema,
+])
 
 export const EtherscanResponse = z.object({
     status: z.string(),
@@ -44,17 +56,27 @@ const FunctionSchema = BaseAbiSchema.extend({
   constant: z.boolean().optional(),
 });
 
+// Add this schema for error types
+const ErrorSchema = BaseAbiSchema.extend({
+  type: z.literal('error'),
+  name: z.string(),
+});
+
+// Update the discriminated union to include ErrorSchema
 export const AbiItemSchema = z.discriminatedUnion('type', [
   ConstructorSchema,
   EventSchema,
   FunctionSchema,
+  ErrorSchema,  // Add this line
 ]);
 
-export const AbiSchema = z.array(AbiItemSchema);
+export const AbiSchema = z.array(AbiItemSchema)
 
 export type Event = z.infer<typeof EventSchema>;
-export type GenerateOptions = z.infer<typeof GenerateOptionsSchema>;
+export type Options = z.infer<typeof OptionsSchema>;
 export type AbiItem = z.infer<typeof AbiItemSchema>;
 export type ContractAbi = z.infer<typeof AbiSchema>;
 
+export type FromFile = z.infer<typeof FromFileSchema>
+export type FromAddress = z.infer<typeof FromAddressSchema>
 

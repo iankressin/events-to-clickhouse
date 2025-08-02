@@ -2,16 +2,16 @@ import {
     AbiSchema,
     ContractAbi,
     EtherscanResponse,
-    GenerateOptionsSchema,
-    GenerateOptions,
+    OptionsSchema,
     Event,
+    FromAddress,
+    FromFile,
 } from "./schemas";
 import { solidityToClickHouseTypes } from "./config";
-import { writeFileSync } from 'fs';
 import { Effect } from "effect";
 import { parseData } from "../../utils/parse";
 import { get } from '../../utils/fetch'
-import { catchErr } from "../../utils/misc";
+import { readJsonFile, writeToFile } from "../../utils/fs";
 
 const BASE_ETHERSCAN_URL = 'https://api.etherscan.io/v2/api';
 const FILE_NAME = 'events.sql';
@@ -27,8 +27,13 @@ interface ParsedEvent {
 }
 
 export const generate = (options: any) => Effect.gen(function* () {
-    const parsedOptions = yield* parseData(GenerateOptionsSchema, options)
-    const abi = yield* fetchAbi(parsedOptions)
+    const parsedOptions = yield* parseData(OptionsSchema, options)
+
+    const abi = parsedOptions.from === 'address'
+        ? yield* fetchFromEtherscan(parsedOptions)
+        : yield* readJsonFile(options.abi, AbiSchema)
+        
+
     const abiEvents = extractEvents(abi)
     for (const event of abiEvents) {
         const tableSql = tableTemplate(event);
@@ -36,7 +41,7 @@ export const generate = (options: any) => Effect.gen(function* () {
     }
 })
 
-const fetchAbi = (options: GenerateOptions) => Effect.gen(function* () {
+const fetchFromEtherscan = (options: FromAddress) => Effect.gen(function* () {
     const params = new URLSearchParams({
         module: 'contract',
         action: 'getabi',
@@ -82,8 +87,3 @@ ENGINE = CollapsingMergeTree()
 ORDER BY (block_number, timestamp)
 
 ` 
-
-const writeToFile = (content: string, filePath: string) => Effect.try({
-    try: () => writeFileSync(filePath, content, { encoding: 'utf8', flag: 'a' }),
-    catch: catchErr
-})
