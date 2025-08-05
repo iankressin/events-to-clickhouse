@@ -1,16 +1,24 @@
 {
-  "name": "events-to-clickhouse-table",
+  "name": "events-to-table",
+  "version": "0.0.1",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "build": "tsup",
+    "start": "node bin/index.js",
     "watch": "tsc --watch",
     "dev:contract": "cross-env ts-node-dev --respawn --transpile-only src/index.ts generate --from address --etherscan $ETHERSCAN_API --contract 0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
     "dev:abi": "cross-env ts-node-dev --respawn --transpile-only src/index.ts generate --from abi --abi ./abi.json"
+  },
+  "bin": {
+    "ets": "bin/index.js"
+  },
+  "exports": {
+    ".": "./bin/index.js"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
     "cross-env": "^10.0.0",
     "ts-node-dev": "^2.0.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   },
   "dependencies": {

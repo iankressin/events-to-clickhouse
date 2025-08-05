@@ -2,3 +2,4 @@ node_modules/
 dist/
 events.sql
 abi.json
+bin/

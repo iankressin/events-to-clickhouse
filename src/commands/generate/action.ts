@@ -7,7 +7,7 @@ import {
     FromAddress,
 } from "./schemas";
 import { solidityToClickHouseTypes } from "./config";
-import { Effect } from "effect";
+import { Effect, Console } from "effect";
 import { parseData } from "../../utils/parse";
 import { get } from '../../utils/fetch'
 import { readJsonFile, writeToFile } from "../../utils/fs";
@@ -37,6 +37,8 @@ export const generate = (options: any) => Effect.gen(function* () {
         const tableSql = tableTemplate(event);
         yield* writeToFile(tableSql, FILE_NAME);
     }
+
+    Console.log(`Tables created at ${__dirname}/${FILE_NAME}`)
 })
 
 const fetchFromEtherscan = (options: FromAddress) => Effect.gen(function* () {
