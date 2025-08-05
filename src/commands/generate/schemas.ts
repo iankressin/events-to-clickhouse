@@ -1,5 +1,7 @@
 import { z } from 'zod'
 
+const CaseSchema = z.literal(['snake', 'camel', 'preserve'])
+
 export const FromAddressSchema = z.object({
   from: z.literal('address'),
   etherscan: z.string(),
@@ -7,12 +9,14 @@ export const FromAddressSchema = z.object({
   contract: z.string(),
   output: z.string().optional(),
   chain: z.number().default(1),
+  case: CaseSchema,
 })
 
 export const FromFileSchema = z.object({
   from: z.literal('abi'),
   abi: z.string(),
   output: z.string().optional(),
+  case: CaseSchema,
 })
 
 export const OptionsSchema = z.discriminatedUnion('from', [
@@ -77,5 +81,6 @@ export type Options = z.infer<typeof OptionsSchema>
 export type AbiItem = z.infer<typeof AbiItemSchema>
 export type ContractAbi = z.infer<typeof AbiSchema>
 
+export type Case = z.infer<typeof CaseSchema>
 export type FromFile = z.infer<typeof FromFileSchema>
 export type FromAddress = z.infer<typeof FromAddressSchema>

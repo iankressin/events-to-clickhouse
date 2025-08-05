@@ -23,4 +23,10 @@ program
     'Etherscan API key. Must be provided if fetch ABI by contract address',
   )
   .option('-o --output <string>', 'Output directory for the generated file')
+  .option(
+    '--case <snake | camel | preserve>',
+    'The case used to name the table and the field',
+    'snake',
+  )
+
   .action((options) => Effect.runPromise(generate(options)))

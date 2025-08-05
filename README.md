@@ -31,5 +31,6 @@ events-to-table generate --from abi --abi ./path/to/abi.json
 - `--etherscan <string>` - Etherscan API key (required when using `--from address`)
 - `--abi <string>` - Path to local ABI file (required when using `--from abi`)
 - `--output <string>` - Output directory for generated files (optional)
+- `--case <snake | camel | preserve>` - The case style used to name the table and fields. (defaults to snake)
 
 It uses [Effect](https://effect.website) btw
