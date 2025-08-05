@@ -5,8 +5,7 @@ A CLI tool that generates ClickHouse table schemas from Ethereum contract events
 ## Installation
 
 ```bash
-pnpm install
-pnpm build
+npm install -g events-to-table
 ```
 
 ## Usage
@@ -16,13 +15,13 @@ The CLI has one command: `generate`
 ### Generate from contract address
 
 ```bash
-node dist/index.js generate --from address --contract 0x1f9840a85d5af5bf1d1762f925bdaddc4201f984 --etherscan YOUR_API_KEY
+events-to-table generate --from address --contract 0x1f9840a85d5af5bf1d1762f925bdaddc4201f984 --etherscan $ETHERSCAN_KEY
 ```
 
 ### Generate from ABI file
 
 ```bash
-node dist/index.js generate --from abi --abi ./path/to/abi.json
+events-to-table generate --from abi --abi ./path/to/abi.json
 ```
 
 ## Options
