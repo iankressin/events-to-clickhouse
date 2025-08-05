@@ -1,7 +1,7 @@
-import { program } from "./program";
+import { program } from './program'
 
 function main() {
-    program.parse(process.argv)
+  program.parse(process.argv)
 }
 
 void main()

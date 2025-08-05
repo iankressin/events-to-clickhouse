@@ -1,20 +1,26 @@
-import { Command } from 'commander';
-import { generate } from './commands/generate/action';
-import { Effect } from 'effect/index';
+import { Command } from 'commander'
+import { Effect } from 'effect/index'
+import { generate } from './commands/generate/action'
 
 export const program = new Command()
 
 program
-    .name('events-to-tables')
-    .description('Create DB tables from EVM events')
-    .version('0.1.0')
+  .name('events-to-tables')
+  .description('Create DB tables from EVM events')
+  .version('0.1.0')
 
 program
-    .command('generate')
-    .description('Generate DB tables from EVM events')
-    .option(`-f, --from <'address', 'abi'>`, 'Tells the CLI to either fetch the ABI from Etherscan using the contract address or from a local ABI file')
-    .option('-a, --abi <string>', 'Path to ABI file')
-    .option('-c --contract <string>', 'Contract address')
-    .option('-e, --etherscan <string>', 'Etherscan API key. Must be provided if fetch ABI by contract address')
-    .option('-o --output <string>', 'Output directory for the generated file')
-    .action((options) => Effect.runPromise(generate(options)))
+  .command('generate')
+  .description('Generate DB tables from EVM events')
+  .option(
+    `-f, --from <'address', 'abi'>`,
+    'Tells the CLI to either fetch the ABI from Etherscan using the contract address or from a local ABI file',
+  )
+  .option('-a, --abi <string>', 'Path to ABI file')
+  .option('-c --contract <string>', 'Contract address')
+  .option(
+    '-e, --etherscan <string>',
+    'Etherscan API key. Must be provided if fetch ABI by contract address',
+  )
+  .option('-o --output <string>', 'Output directory for the generated file')
+  .action((options) => Effect.runPromise(generate(options)))

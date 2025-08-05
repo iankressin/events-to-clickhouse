@@ -1,26 +1,25 @@
-import { readFileSync, writeFileSync } from 'fs';
-import { catchErr, safeJsonParse } from "./misc";
-import { Effect } from 'effect/index';
-import type { ZodType } from 'zod';
-import { parseData } from './parse';
+import { Effect } from 'effect/index'
+import { readFileSync, writeFileSync } from 'fs'
+import type { ZodType } from 'zod'
+import { catchErr, safeJsonParse } from './misc'
+import { parseData } from './parse'
 
-export const writeToFile = (content: string, path: string) => Effect.try({
+export const writeToFile = (content: string, path: string) =>
+  Effect.try({
     try: () => writeFileSync(path, content, { encoding: 'utf8', flag: 'a' }),
-    catch: catchErr
-})
+    catch: catchErr,
+  })
 
-export const readJsonFile = <T extends ZodType>(
-    path: string,
-    schema: T
-) => Effect.try({
+export const readJsonFile = <T extends ZodType>(path: string, schema: T) =>
+  Effect.try({
     try: () => {
-        if (!path.endsWith('.json'))
-            new Error('JSON file path must have .json file extension')
+      if (!path.endsWith('.json'))
+        new Error('JSON file path must have .json file extension')
 
-        return readFileSync(path, 'utf8')
+      return readFileSync(path, 'utf8')
     },
-    catch: catchErr
-}).pipe(
+    catch: catchErr,
+  }).pipe(
     Effect.flatMap((contents) => safeJsonParse(contents)),
     Effect.flatMap((json) => parseData(schema, json)),
-)
+  )
