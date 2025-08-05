@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import { output, ZodType, ZodSafeParseSuccess  } from "zod"; 
+import type { output, ZodType, ZodSafeParseSuccess  } from "zod"; 
 
 export function parseData<
     T extends ZodType,

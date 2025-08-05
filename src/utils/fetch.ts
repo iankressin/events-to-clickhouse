@@ -1,5 +1,5 @@
 import { Effect } from "effect/index"
-import { ZodType } from "zod"
+import type { ZodType } from "zod"
 import { parseData } from "./parse"
 import { catchErr } from "./misc"
 

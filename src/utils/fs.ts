@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync } from 'fs';
 import { catchErr, safeJsonParse } from "./misc";
 import { Effect } from 'effect/index';
-import { ZodType } from 'zod';
+import type { ZodType } from 'zod';
 import { parseData } from './parse';
 
 export const writeToFile = (content: string, path: string) => Effect.try({
