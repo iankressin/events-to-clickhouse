@@ -89,9 +89,10 @@ const tableTemplate = (event: ParsedEvent, defaultCase: Case) =>
     ${formatStr('blockNumber', defaultCase)} UInt32 CODEC (DoubleDelta, ZSTD),
     timestamp DateTime CODEC (DoubleDelta, ZSTD),
     ${event.params.map((arg) => `${formatStr(arg.name, defaultCase)} ${solidityToClickHouseTypes[arg.type]}`).join(',\n\t')},
-    sign Int8 DEFAULT 1,
+    sign Int8 DEFAULT 1
 )
-ENGINE = CollapsingMergeTree()
-ORDER BY (block_number, timestamp)
+ENGINE = CollapsingMergeTree(sign)
+PARTITION BY toYYYYMM(timestamp)
+ORDER BY (${formatStr('blockNumber', defaultCase)}, timestamp);
 
 `

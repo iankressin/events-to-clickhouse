@@ -3,3 +3,4 @@ dist/
 events.sql
 abi.json
 bin/
+*.sql
