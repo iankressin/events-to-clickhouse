@@ -20,8 +20,8 @@ export const solidityToClickHouseTypes = {
   // Boolean
   bool: 'Bool',
 
-  // Address (20 bytes)
-  address: 'LowCardinality(FixedString(20))',
+  // Address
+  address: 'LowCardinality(FixedString(42))',
 
   // Fixed-size bytes
   bytes1: 'FixedString(1)',
