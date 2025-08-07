@@ -87,6 +87,7 @@ const extractEvents = (abi: ContractAbi): ParsedEvent[] => {
 const tableTemplate = (event: ParsedEvent, defaultCase: Case) =>
   `CREATE TABLE IF NOT EXISTS ${formatStr(event.name, defaultCase)} (
     ${formatStr('blockNumber', defaultCase)} UInt32 CODEC (DoubleDelta, ZSTD),
+    ${formatStr('transactionHash', defaultCase)} FixedString(66),
     timestamp DateTime CODEC (DoubleDelta, ZSTD),
     ${event.params.map((arg) => `${formatStr(arg.name, defaultCase)} ${solidityToClickHouseTypes[arg.type]}`).join(',\n\t')},
     sign Int8 DEFAULT 1
