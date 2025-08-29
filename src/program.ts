@@ -7,7 +7,7 @@ export const program = new Command()
 program
   .name('events-to-tables')
   .description('Create DB tables from EVM events')
-  .version('0.0.6')
+  .version('0.0.7')
 
 program
   .command('generate')
