@@ -9,6 +9,7 @@ export const FromAddressSchema = z.object({
   contract: z.string(),
   output: z.string().optional(),
   chain: z.number().default(1),
+  tablePrefix: z.string().optional(),
   case: CaseSchema,
 })
 
@@ -16,6 +17,7 @@ export const FromFileSchema = z.object({
   from: z.literal('abi'),
   abi: z.string(),
   output: z.string().optional(),
+  tablePrefix: z.string().optional(),
   case: CaseSchema,
 })
 

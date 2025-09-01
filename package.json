@@ -1,11 +1,11 @@
 {
   "name": "events-to-table",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "scripts": {
     "build": "tsup",
     "start": "node bin/index.js",
     "watch": "tsc --watch",
-    "dev:contract": "cross-env ts-node-dev --respawn --transpile-only src/index.ts generate --from address --etherscan $ETHERSCAN_API --contract 0x947f0054faed3481ff4e76ca35f12fbe36cc665b --output ./custom.sql --case preserve",
+    "dev:contract": "cross-env ts-node-dev --respawn --transpile-only src/index.ts generate --from address --etherscan $ETHERSCAN_API --contract 0x947f0054faed3481ff4e76ca35f12fbe36cc665b --output ./custom.sql --table-prefix aaveEvt --case camel",
     "dev:abi": "cross-env ts-node-dev --respawn --transpile-only src/index.ts generate --from abi --abi ./abi.json",
     "lint:fix": "biome check . --write",
     "prepublishOnly": "pnpm build"

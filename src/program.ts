@@ -7,7 +7,7 @@ export const program = new Command()
 program
   .name('events-to-tables')
   .description('Create DB tables from EVM events')
-  .version('0.0.8')
+  .version('0.0.9')
 
 program
   .command('generate')
@@ -28,5 +28,5 @@ program
     'The case used to name the table and the field',
     'snake',
   )
-
+  .option('-t --table-prefix <string>', 'Prefix to append to table names')
   .action((options) => Effect.runPromise(generate(options)))

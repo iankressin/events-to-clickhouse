@@ -41,7 +41,11 @@ export const generate = (options: any) =>
 
     const abiEvents = extractEvents(abi)
     for (const event of abiEvents) {
-      const tableSql = tableTemplate(event, parsedOptions.case)
+      const tableSql = tableTemplate(
+        event,
+        parsedOptions.case,
+        parsedOptions.tablePrefix,
+      )
       yield* writeToFile(tableSql, outputPath)
     }
 
@@ -84,8 +88,12 @@ const extractEvents = (abi: ContractAbi): ParsedEvent[] => {
     })
 }
 
-const tableTemplate = (event: ParsedEvent, defaultCase: Case) =>
-  `CREATE TABLE IF NOT EXISTS ${formatStr(event.name, defaultCase)} (
+const tableTemplate = (
+  event: ParsedEvent,
+  defaultCase: Case,
+  tablePrefix = '',
+) =>
+  `CREATE TABLE IF NOT EXISTS ${formatStr(`${tablePrefix}${event.name}`, defaultCase)} (
     ${formatStr('blockNumber', defaultCase)} UInt32 CODEC (DoubleDelta, ZSTD),
     ${formatStr('transactionHash', defaultCase)} FixedString(66),
     contract LowCardinality(FixedString(42)),
