@@ -90,6 +90,7 @@ const tableTemplate = (event: ParsedEvent, defaultCase: Case) =>
     ${formatStr('transactionHash', defaultCase)} FixedString(66),
     contract LowCardinality(FixedString(42)),
     ${formatStr('logIndex', defaultCase)} UInt16,
+    timestamp DateTime CODEC (DoubleDelta, ZSTD),
     ${event.params.map((arg) => `${formatStr(arg.name, defaultCase)} ${solidityToClickHouseTypes[arg.type]}`).join(',\n\t')},
     sign Int8 DEFAULT 1
 )
